@@ -1,0 +1,8 @@
+# Python 3.9.12
+abqpy==2022.7.2
+matplotlib==3.7.2
+numpy==1.23.5
+opencv-python==4.9.0.80
+pandas==2.0.3
+scipy==1.10.1
+
