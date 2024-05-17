@@ -2,7 +2,7 @@
 
 This repository contains scripts for the batch generation of 2D polycrystalline RVE models and finite element analysis operations. These scripts are used to simulate the growth of fatigue cracks in polycrystalline materials. The involved software includes Neper, Gmsh, and Abaqus 2022.
 
-## Specific Operation Process
+## simulation_utils:
 
 ### Preprocessing:
 1. **Run `scriptGenerator.py`**
