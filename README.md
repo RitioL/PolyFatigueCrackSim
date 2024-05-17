@@ -38,3 +38,14 @@ This repository contains scripts for the batch generation of polycrystalline RVE
 - `subroutines.for` is the original subroutine.
 - `subroutines2.for` adds a non-local method to the original version.
 - `subroutines3.for` adds an early-stopping mechanism to the original version.
+
+## References:
+- Abaqus:
+    - https://www.bilibili.com/video/BV1z34y1B7mc/?share_source=copy_web&vd_source=f0f26d78a8c687fafec0191a99a75a1a
+- Neper&Gmsh:
+    - https://www.bilibili.com/video/BV1cq4y1G7vt/?share_source=copy_web&vd_source=f0f26d78a8c687fafec0191a99a75a1a
+    - https://neper.info/index.html
+    - https://github.com/neperfepx/neper/discussions
+- Articles:
+    - Guo, H. H., Lu, R. S., Liu, F., Cui, W., Shen, J., Yang, J., & Zhang, X. C. (2023). Microscopic fatigue crack propagation model for polycrystalline alloys. International Journal of Fatigue, 170, 107526.
+    - Guo, G., Jiang, W., Liu, X., Chen, J., Li, L., Wang, J., ... & Zhang, Z. (2023). In-situ SEM-EBSD investigation of the low-cycle fatigue deformation behavior of Inconel 718 at grain-scale. Journal of Materials Research and Technology, 24, 5007-5023.
