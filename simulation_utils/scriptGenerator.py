@@ -1,6 +1,9 @@
 import os
+import json
 
-root_path = r"d:\lzl\LocallyFinerMeshes"
+with open('config.json', 'r') as f:
+    config = json.load(f)
+root_path = config.get('root_path')
 os.chdir(root_path)
 
 script1_content = [] # Script for gmsh
@@ -42,7 +45,7 @@ for id in range(1, 11, 1):
     script3_content.append(
         f"cd {wp_name}\n"
         "if exist \"Job-2.lck\" del \"Job-2.lck\"\n"
-        "cmd/c abq2022 cpus=16 job=Job-2 user=..\\subroutines3_fixed.for input=Job-1_modified.inp int ask=OFF\n"
+        "cmd/c abq2022 cpus=16 job=Job-2 user=..\\subroutines3_revised.for input=Job-1_modified.inp int ask=OFF\n"
         "if exist \"Job-2.dat\" del \"Job-2.dat\"\n"
         "if exist \"Job-2.stt\" del \"Job-2.stt\"\n"
         "cd ..\n"

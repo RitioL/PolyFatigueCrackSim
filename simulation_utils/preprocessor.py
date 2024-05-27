@@ -106,16 +106,16 @@ def main(rootPath, modelName):
     top_edge, bottom_edge, left_edge, right_edge = getEdgeNodeId(rootPath, height, width)
     
     # 设置边界条件1-右边x方向固定
-    # nodes1 = None
-    # for i in right_edge:
-    #     if nodes1 is None:
-    #         nodes1 = n1[i-1:i]
-    #     else:
-    #         nodes1 = nodes1 + n1[i-1:i]
-    # region = regionToolset.Region(nodes=nodes1)
-    # model.DisplacementBC(name='BC-1', 
-    #     createStepName='Initial', region=region, u1=SET, u2=UNSET, ur3=UNSET, 
-    #     amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+    nodes1 = None
+    for i in right_edge:
+        if nodes1 is None:
+            nodes1 = n1[i-1:i]
+        else:
+            nodes1 = nodes1 + n1[i-1:i]
+    region = regionToolset.Region(nodes=nodes1)
+    model.DisplacementBC(name='BC-1', 
+        createStepName='Initial', region=region, u1=SET, u2=UNSET, ur3=UNSET, 
+        amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 
     # 设置边界条件2-上边循环载荷
     nodes1 = None
@@ -126,7 +126,7 @@ def main(rootPath, modelName):
             nodes1 = nodes1 + n1[i-1:i]
     region = regionToolset.Region(nodes=nodes1)
     model.DisplacementBC(name='BC-2', 
-        createStepName='Step-1', region=region, u1=SET, u2=0.00025, ur3=UNSET, 
+        createStepName='Step-1', region=region, u1=UNSET, u2=0.00025, ur3=UNSET, 
         amplitude='Amp-1', fixed=OFF, distributionType=UNIFORM, fieldName='', 
         localCsys=None)
 
@@ -139,7 +139,7 @@ def main(rootPath, modelName):
             nodes1 = nodes1 + n1[i-1:i]
     region = regionToolset.Region(nodes=nodes1)
     model.DisplacementBC(name='BC-3', 
-        createStepName='Step-1', region=region, u1=SET, u2=-0.00025, ur3=UNSET, 
+        createStepName='Step-1', region=region, u1=UNSET, u2=-0.00025, ur3=UNSET, 
         amplitude='Amp-1', fixed=OFF, distributionType=UNIFORM, fieldName='', 
         localCsys=None)
 
@@ -160,24 +160,13 @@ def main(rootPath, modelName):
 
 if __name__ == '__main__':
     import os
-    # For single case:
-    # root_path = r"D:\CrackImage\PolyFEM\neper\16-betterGB"
+    import json
 
-    # os.chdir(root_path)
-        
-    # wp_name = "LocallyFinerMeshes"
-    # wp_path = os.path.join(root_path, wp_name)
-    # model_name = "poly_01_quad_modified"
-
-    # if not os.path.exists(wp_name):
-    #     os.makedirs(wp_name)
-    # os.chdir(os.path.join(root_path, wp_name))
-
-    # main(wp_path, model_name)
+    with open('config.json', 'r') as f:
+        config = json.load(f)
+    root_path = config.get('root_path')
 
     # For multiple cases:
-    root_path = r"D:\lzl\LocallyFinerMeshes"
-
     for wp_name in ["wp{:03d}".format(i) for i in range(1,11,1)]:
         os.chdir(root_path)
             
