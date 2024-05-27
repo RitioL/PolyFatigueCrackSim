@@ -164,10 +164,10 @@ if __name__ == '__main__':
 
     with open('config.json', 'r') as f:
         config = json.load(f)
-    root_path = config.get('root_path')
+    root_path = str(config.get('root_path'))
 
     # For multiple cases:
-    for wp_name in ["wp{:03d}".format(i) for i in range(1,11,1)]:
+    for wp_name in ["wp{:03d}".format(i) for i in range(11,21,1)]:
         os.chdir(root_path)
             
         wp_path = os.path.join(root_path, wp_name)
