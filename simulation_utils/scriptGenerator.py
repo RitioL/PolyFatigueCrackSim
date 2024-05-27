@@ -33,7 +33,7 @@ for id in range(1, 11, 1):
         "neper -T -n from_morpho -dim 2 -domain \"square(1.5,1.0)\" "
         "-morpho \"diameq:lognormal(0.07923,0.02839),1-sphericity:lognormal(0.14,0.07)\" "
         f"-id {id} -reg 1 -o poly.tess\n"
-        "neper -M poly.tess -nset edges -cledge \"(y>0.25&&y<0.75&&x>-0.01&&x<1.0)?0.025:0.15\" -order 1 -format msh4 -o poly_msh\n"
+        "neper -M poly.tess -nset edges -cledge \"(y>0.25&&y<0.75&&x>-0.01&&x<1.0)?0.08:0.08\" -order 1 -format msh4 -o poly_msh\n"
         "gmsh poly_quad.geo -2 -format inp\n"
         "cd ..\n"
         )
@@ -42,7 +42,9 @@ for id in range(1, 11, 1):
     script3_content.append(
         f"cd {wp_name}\n"
         "if exist \"Job-2.lck\" del \"Job-2.lck\"\n"
-        "cmd/c abq2022 cpus=16 job=Job-2 user=..\\subroutines3.for input=Job-1_modified.inp int ask=OFF\n"
+        "cmd/c abq2022 cpus=16 job=Job-2 user=..\\subroutines3_fixed.for input=Job-1_modified.inp int ask=OFF\n"
+        "if exist \"Job-2.dat\" del \"Job-2.dat\"\n"
+        "if exist \"Job-2.stt\" del \"Job-2.stt\"\n"
         "cd ..\n"
         )
     

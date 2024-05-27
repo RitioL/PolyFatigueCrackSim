@@ -104,7 +104,7 @@ def getElementN(content_lines):
     return int(elementN)
 
 # 获取随机晶体取向
-def getRandomOrientation(grainN, seed=42):
+def getRandomOrientation(grainN, seed=1):
     np.random.seed(seed)
     id = np.arange(1, grainN+1, 1).reshape((grainN, 1))
     phi1 = np.random.uniform(0, 360, size=(grainN, 1))
