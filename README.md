@@ -35,9 +35,7 @@ This repository contains scripts for the batch generation of 2D polycrystalline 
     - **Note:** This script filters and extracts results from different frames one by one.
 
 ## UMAT Instructions:
-- `subroutines.for` is the original subroutine.
-- `subroutines2.for` adds a non-local method to the original version.
-- `subroutines3.for` adds an early-stopping mechanism to the original version.
+- `subroutines3_revised.for` adds an early-stopping mechanism to the original version, and is revised according to https://www.zhihu.com/question/45491271/answer/1192511740
 
 ## References:
 - Abaqus:
