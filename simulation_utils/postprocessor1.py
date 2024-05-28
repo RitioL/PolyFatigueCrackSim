@@ -1,12 +1,15 @@
 # Extract PHILSM information from Odb file
 from extractFromODB import *
 import os
+import json
 
 frame = -1
-root_path = r"d:\lzl\LocallyFinerMeshes"
 
-for id in range(1,6,1):
-    wp_name = "wp0" + str(id)
+with open('config.json', 'r') as f:
+    config = json.load(f)
+root_path = str(config.get('root_path'))
+
+for wp_name in ["wp{:03d}".format(i) for i in range(1,2,1)]:
     wp_path = os.path.join(root_path, wp_name)
     job_name = "Job-2.odb"
     extractFromODB(wp_path,job_name,frame)
