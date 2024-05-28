@@ -15,7 +15,7 @@ for path in save_path:
     
 # setFigureSize(6, 4)
 
-for wp_name in ["wp{:03d}".format(i) for i in range(1,2,1)]:
+for wp_name in ["wp{:03d}".format(i) for i in range(1,3,1)]:
     path = os.path.join(root_path, wp_name)
     save_singal = drawCrack(path, save_path=save_path[1], save_name=wp_name)
     # 如果裂纹长度达到阈值则save_singal为真
