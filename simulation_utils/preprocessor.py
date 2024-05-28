@@ -9,10 +9,13 @@ import numpy as np
 
 executeOnCaeStartup()
 
-def getEdgeNodeId(path, height, width):
+def getEdgeNodeId(path):
     """Return the node ID of top, bottom, left, and right edges of the model"""
     node_info_path = os.path.join(path, "node_info.csv")
     node_info = np.genfromtxt(node_info_path, delimiter=',')
+
+    height = np.max(node_info[:, 2])
+    width = np.max(node_info[:, 1])
 
     top_edge = []
     bottom_edge = []
@@ -31,13 +34,15 @@ def getEdgeNodeId(path, height, width):
         else:
             continue
         
-    return top_edge, bottom_edge, left_edge, right_edge
+    return top_edge, bottom_edge, left_edge, right_edge, height, width
 
 def main(rootPath, modelName):
     inputFileName = os.path.join(rootPath, modelName + ".inp")   
     mdb.ModelFromInputFile(name=modelName, inputFileName=inputFileName)
     model = mdb.models[modelName]
-    height, width = 1.0, 1.5 # 模型尺寸
+
+    # 各边上的节点ID以及模型尺寸
+    top_edge, bottom_edge, left_edge, right_edge, height, width = getEdgeNodeId(rootPath)
 
     # 创建裂纹部件
     s = model.ConstrainedSketch(name='__profile__', sheetSize=1.0)
@@ -100,12 +105,9 @@ def main(rootPath, modelName):
     model.TabularAmplitude(name='Amp-1', 
         timeSpan=TOTAL, smooth=SOLVER_DEFAULT, data=((0.0, 0.0), (0.5, 1.0), (1.0, 
         0.0)))
-
-    # 获取模型各边节点ID
-    n1 = a.instances['NOTCHED-1'].nodes
-    top_edge, bottom_edge, left_edge, right_edge = getEdgeNodeId(rootPath, height, width)
     
     # 设置边界条件1-右边x方向固定
+    n1 = a.instances['NOTCHED-1'].nodes
     nodes1 = None
     for i in right_edge:
         if nodes1 is None:
@@ -126,7 +128,7 @@ def main(rootPath, modelName):
             nodes1 = nodes1 + n1[i-1:i]
     region = regionToolset.Region(nodes=nodes1)
     model.DisplacementBC(name='BC-2', 
-        createStepName='Step-1', region=region, u1=UNSET, u2=0.00025, ur3=UNSET, 
+        createStepName='Step-1', region=region, u1=UNSET, u2=0.0002, ur3=UNSET, 
         amplitude='Amp-1', fixed=OFF, distributionType=UNIFORM, fieldName='', 
         localCsys=None)
 
@@ -139,7 +141,7 @@ def main(rootPath, modelName):
             nodes1 = nodes1 + n1[i-1:i]
     region = regionToolset.Region(nodes=nodes1)
     model.DisplacementBC(name='BC-3', 
-        createStepName='Step-1', region=region, u1=UNSET, u2=-0.00025, ur3=UNSET, 
+        createStepName='Step-1', region=region, u1=UNSET, u2=-0.0002, ur3=UNSET, 
         amplitude='Amp-1', fixed=OFF, distributionType=UNIFORM, fieldName='', 
         localCsys=None)
 
@@ -167,7 +169,7 @@ if __name__ == '__main__':
     root_path = str(config.get('root_path'))
 
     # For multiple cases:
-    for wp_name in ["wp{:03d}".format(i) for i in range(11,21,1)]:
+    for wp_name in ["wp{:03d}".format(i) for i in range(1,2,1)]:
         os.chdir(root_path)
             
         wp_path = os.path.join(root_path, wp_name)
