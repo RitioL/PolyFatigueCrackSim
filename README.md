@@ -2,9 +2,11 @@
 
 This repository contains scripts for the batch generation of 2D polycrystalline RVE models and finite element analysis operations. These scripts are used to simulate the growth of fatigue cracks in polycrystalline materials. The involved software includes Neper, Gmsh, and Abaqus 2022.
 
-## simulation_utils:
+## 1.simulation_utils:
 
 ### Preprocessing:
+0. **Set `config.json`**
+    - **Note:** Set your workplace path.
 1. **Run `scriptGenerator.py`**
     - **Note:** This script generates the batch polycrystal model generation script `neper.sh` and the Abaqus operation startup script `startup.bat`.
 2. **Change the directory to where `neper.sh` is located in the Ubuntu command line, then enter the following command:**
@@ -34,10 +36,10 @@ This repository contains scripts for the batch generation of 2D polycrystalline 
 9. **Run `postprocessor3.py`**
     - **Note:** This script filters and extracts results from different frames one by one.
 
-## UMAT Instructions:
+## 2.UMAT Instructions:
 - `subroutines3_revised.for` adds an early-stopping mechanism to the original version, and is revised according to https://www.zhihu.com/question/45491271/answer/1192511740
 
-## References:
+## 3.References:
 - Abaqus:
     - https://www.bilibili.com/video/BV1z34y1B7mc/?share_source=copy_web&vd_source=f0f26d78a8c687fafec0191a99a75a1a
 - Neper&Gmsh:
