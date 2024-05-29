@@ -15,7 +15,7 @@ def extractFromODB(path, job_name, frame=-1):
         print("Odb file is from old version and has been updated.")
         odb = openOdb(path=temp_path, readOnly=True)
     
-    instance = odb.rootAssembly.instances['TESS-1']
+    instance = odb.rootAssembly.instances['NOTCHED-1']
 
     lastFrame = odb.steps['Step-1'].frames[frame]
     philsm = lastFrame.fieldOutputs['PHILSM']
