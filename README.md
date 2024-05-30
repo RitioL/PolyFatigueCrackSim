@@ -45,6 +45,10 @@ This repository contains scripts for the batch generation of 2D polycrystalline 
     neper -T -n from_morpho -dim 2 -morpho "diameq:lognormal(0.07923,0.02839),1-sphericity:lognormal(0.14,0.07)" -domain "square(1.5,1.5)" -transform "cut(cube(-0.2,0.2,0.65,0.85,-1,1,0.1))" -reg 1 -id 2 -o notched_poly
     ```  
     ![A notched polycrystalline model cut out using a rounded rectangle](images/case1.png)
+    ```bash
+    neper -M notched_poly.tess -nset edges -cledge "(y>0.25&&y<0.75&&x>-0.01&&x<1.0)?0.05:0.08" -order 1 -format msh -o notched_poly_msh
+    ```
+    ![A notched polycrystalline model with locally finer meshing](images/case2.png)
 ## 4.References:
 - Abaqus:
     - https://www.bilibili.com/video/BV1z34y1B7mc/?share_source=copy_web&vd_source=f0f26d78a8c687fafec0191a99a75a1a
