@@ -41,7 +41,6 @@ This repository contains scripts for the batch generation of 2D polycrystalline 
 
 ## 3.Neper Cases:
 - Some neper cases are shown here, which might help you to build polycrystalline models.
-    - Case 1
     ```bash
     neper -T -n from_morpho -dim 2 -morpho "diameq:lognormal(0.07923,0.02839),1-sphericity:lognormal(0.14,0.07)" -domain "square(1.5,1.5)" -transform "cut(cube(-0.2,0.2,0.65,0.85,-1,1,0.1))" -reg 1 -id 2 -o notched_poly
     ```  
