@@ -39,7 +39,14 @@ This repository contains scripts for the batch generation of 2D polycrystalline 
 ## 2.UMAT Instructions:
 - `subroutines3_revised.for` adds an early-stopping mechanism to the original version, and is revised according to https://www.zhihu.com/question/45491271/answer/1192511740
 
-## 3.References:
+## 3.Neper Cases:
+- Some neper cases are shown here, which might help you to build polycrystalline models.
+    - Case 1
+    ```bash
+    neper -T -n from_morpho -dim 2 -morpho "diameq:lognormal(0.07923,0.02839),1-sphericity:lognormal(0.14,0.07)" -domain "square(1.5,1.5)" -transform "cut(cube(-0.2,0.2,0.65,0.85,-1,1,0.1))" -reg 1 -id 2 -o notched_poly
+    ```  
+    ![A notched polycrystalline model cut out using a rounded rectangle](images/case1.jpg)
+## 4.References:
 - Abaqus:
     - https://www.bilibili.com/video/BV1z34y1B7mc/?share_source=copy_web&vd_source=f0f26d78a8c687fafec0191a99a75a1a
 - Neper&Gmsh:
