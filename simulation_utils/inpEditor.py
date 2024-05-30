@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 plt.rcParams['font.sans-serif'] = ['SimHei'] # 用来正常显示中文标签SimHei
 plt.rcParams['axes.unicode_minus'] = False # 用来正常显示负号
 
+with open('config.json', 'r') as f:
+    config = json.load(f)
+smooth_grain_boundary = config.get('smooth_grain_boundary')
+
 IN718 = np.array([
    242180.,   138850.,   104200.,        0.,        0.,        0.,        0.,        0.,
         0.,        0.,        0.,        0.,        0.,        0.,        0.,        0.,
@@ -156,7 +160,8 @@ def adjustElement(content):
     def adjust_line(line, order):
         elements = line.split(',')
         elements[0] = str(int(order))  # 重新编号，假设编号从1开始
-        elements[1], elements[3] = elements[3], elements[1]  # 交换第二个和第四个数字
+        if smooth_grain_boundary:
+            elements[1], elements[3] = elements[3], elements[1]  # 交换第二个和第四个数字
         return ','.join(elements)
     
     order = 1
