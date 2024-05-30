@@ -4,6 +4,7 @@ import json
 with open('config.json', 'r') as f:
     config = json.load(f)
 root_path = config.get('root_path')
+smooth_grain_boundary = config.get('smooth_grain_boundary')
 os.chdir(root_path)
 
 script1_content = [] # Script for gmsh
@@ -11,21 +12,23 @@ script2_content = [] # Script for generating polycrystalline model
 script3_content = [] # Script for FEM calculation
 
 # 1. Script for gmsh: Smooth Grain Boundary
-# script1_content.append(
-#         "Merge \"poly_msh.msh4\";\n"
-#         "Mesh.RecombinationAlgorithm = 1;\n"
-#         "RecombineMesh;\n"
-#         "Mesh.SecondOrderLinear = 1;\n"
-#         "Mesh.SubdivisionAlgorithm = 1;\n"
-#         "Mesh.SaveGroupsOfElements = 0;\n"
-#         "RefineMesh;"
-#     )
+if smooth_grain_boundary:
+    script1_content.append(
+            "Merge \"poly_msh.msh4\";\n"
+            "Mesh.RecombinationAlgorithm = 1;\n"
+            "RecombineMesh;\n"
+            "Mesh.SecondOrderLinear = 1;\n"
+            "Mesh.SubdivisionAlgorithm = 1;\n"
+            "Mesh.SaveGroupsOfElements = 0;\n"
+            "RefineMesh;"
+        )
 
 # 1. Script for gmsh: Non-smooth Grain Boundary
-script1_content.append(
-        "Merge \"poly_msh.msh\";\n"
-        "Mesh.SaveGroupsOfElements = 0;\n"
-    )
+else:
+    script1_content.append(
+            "Merge \"poly_msh.msh\";\n"
+            "Mesh.SaveGroupsOfElements = 0;\n"
+        )
 
 for id in range(1, 2, 1):
     # make directories for abaqus workplace
@@ -37,26 +40,28 @@ for id in range(1, 2, 1):
         newFile.writelines(script1_content)
 
     # 2. Make neper scripts: Smooth Grain Boundary
-    # script2_content.append(
-    #     f"cd {wp_name}\n"
-    #     "neper -T -n from_morpho -dim 2 -domain \"square(1.5,1.0)\" "
-    #     "-morpho \"diameq:lognormal(0.07923,0.02839),1-sphericity:lognormal(0.14,0.07)\" "
-    #     f"-id {id} -reg 1 -o poly.tess\n"
-    #     "neper -M poly.tess -nset edges -cledge \"(y>0.25&&y<0.75&&x>-0.01&&x<1.0)?0.09:0.09\" -order 1 -format msh4 -o poly_msh\n"
-    #     "gmsh poly_quad.geo -2 -format inp\n"
-    #     "cd ..\n"
-    #     )
+    if smooth_grain_boundary:
+        script2_content.append(
+            f"cd {wp_name}\n"
+            "neper -T -n from_morpho -dim 2 -domain \"square(1.5,1.0)\" "
+            "-morpho \"diameq:lognormal(0.07923,0.02839),1-sphericity:lognormal(0.14,0.07)\" "
+            f"-id {id} -reg 1 -o poly.tess\n"
+            "neper -M poly.tess -nset edges -cledge \"(y>0.25&&y<0.75&&x>-0.01&&x<1.0)?0.08:0.08\" -order 1 -format msh4 -o poly_msh\n"
+            "gmsh poly_quad.geo -2 -format inp\n"
+            "cd ..\n"
+            )
 
     # 2. Make neper scripts: Non-smooth Grain Boundary
-    script2_content.append(
-        f"cd {wp_name}\n"
-        "neper -T -n from_morpho -dim 2 -domain \"square(1.5,1.0)\" "
-        "-morpho \"diameq:lognormal(0.07923,0.02839),1-sphericity:lognormal(0.14,0.07)\" "
-        f"-id {id} -reg 1 -o poly.tess\n"
-        "neper -M poly.tess -elttype quad -cl 1/101 -order 1 -format msh -o poly_msh\n"
-        "gmsh poly_quad.geo -2 -format inp\n"
-        "cd ..\n"
-        )
+    else:
+        script2_content.append(
+            f"cd {wp_name}\n"
+            "neper -T -n from_morpho -dim 2 -domain \"square(1.5,1.0)\" "
+            "-morpho \"diameq:lognormal(0.07923,0.02839),1-sphericity:lognormal(0.14,0.07)\" "
+            f"-id {id} -reg 1 -o poly.tess\n"
+            "neper -M poly.tess -elttype quad -cl 1/101 -order 1 -format msh -o poly_msh\n"
+            "gmsh poly_quad.geo -2 -format inp\n"
+            "cd ..\n"
+            )
 
     # 3. Make abaqus scripts
     script3_content.append(
