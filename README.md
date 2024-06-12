@@ -1,6 +1,6 @@
 # PolycrystalFatigueCrackSim
 
-This repository contains scripts for the batch generation of 2D polycrystalline RVE models and finite element analysis operations. These scripts are used to simulate the growth of fatigue cracks in polycrystalline materials. The involved software includes Neper 4.9.0, Gmsh 4.13.1, and Abaqus 2022.
+This repository contains scripts for the batch generation of 2D polycrystalline RVE models and finite element analysis operations. These scripts are used to simulate the growth of fatigue cracks in polycrystalline materials. The involved software includes Neper 4.9.0, Gmsh 4.13.1, and Abaqus 2022. Neper and Gmsh are run on Ubuntu installed via WSL, and the related installation instructions can be found in the References section.
 
 ## 1.simulation_utils:
 
