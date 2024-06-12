@@ -26,17 +26,17 @@ This repository contains scripts for the batch generation of 2D polycrystalline 
 
 ### Execution:
 6. **Run `startup.bat`**
-    - **Note:** This script batch is located in a folder named `workplace` and submits the jobs to Abaqus. The current startup batch is capable of monitoring the command window (see `monitor.ps1` in `workplace`) and resolving stalls caused by Singular Matrix issues.
+    - **Note:** This script batch is located in the `workplace` and is used to submit the jobs to Abaqus. The current startup batch is capable of monitoring the command window (see `monitor.ps1` in `workplace`) and resolving stalls caused by Singular Matrix issues.
 
 ### Post-processing:
 7. **Run `postprocessor1.py`**
-    - **Note:** This script is used to filter cracks that meet the length standard. This script extracts the `philsm` information from the last frame of the Odb file, analyzes whether the crack length meets the specified standard, and deletes any folders that do not meet the standard.
+    - **Note:** This script is used to filter out cracks that do not meet the length standard. This script extracts the `philsm` information from the last frame of the Odb file, analyzes whether the crack length meets the specified standard, and deletes any folders that do not meet the standard.
     ![The workflow of postprocessor1](images/postprocessor1.png)
 8. **Run `postprocessor2.py`**
-    - **Note:** This script is used to identify key frames before and after the crack curves and to generate plots. This script extracts the `philsm` information from selected frames of the Odb file and generates EBSD and crack images.
+    - **Note:** This script is used to identify key frames before the crack turns back and to generate plots. This script extracts the `philsm` information from selected frames of the Odb file and generates EBSD and crack images.
     ![The workflow of postprocessor2](images/postprocessor2.png)
 9. **Run `postprocessor3.py`**
-    - **Note:** This script is used to manually identify key frames before and after the crack curves. While the first two scripts generally produce cracks that meet the length standard and do not contain curved sections, there are still a few cases that require manual intervention.
+    - **Note:** This script is used to manually identify key frames before the crack turns back. While the first two scripts generally produce cracks that meet the length standard and do not contain curved sections, there are still a few cases that require manual intervention.
 
 ## 2.UMAT Instructions:
 - `subroutines3_revised.for` is located in the `workplace`, which adds an early-stopping mechanism to the original version `huang_umat_97.for` and is revised by multiplying certain terms by 2 according to https://www.zhihu.com/question/45491271/answer/1192511740
