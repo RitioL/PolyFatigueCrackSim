@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import json
 import matplotlib.pyplot as plt
 plt.rcParams['font.sans-serif'] = ['SimHei'] # 用来正常显示中文标签SimHei
 plt.rcParams['axes.unicode_minus'] = False # 用来正常显示负号
@@ -256,7 +257,7 @@ def addSectionMaterial(content, depvar, material, orientations):
     return content
 
 # 向inp添加solid section和材料信息
-def inpModifier(src, new, material=IN718, part_name="Tess", ori=None, random_ori=True, depvar=150):
+def inpModifier(src, new, material=IN718, part_name="Tess", ori=None, random_ori=True, ori_seed=1, depvar=150):
     '''
     src: inp path
     new: save path
@@ -271,7 +272,7 @@ def inpModifier(src, new, material=IN718, part_name="Tess", ori=None, random_ori
     
     if random_ori:
         grainN = getGrainInfo(content)
-        ori = getRandomOrientation(grainN)
+        ori = getRandomOrientation(grainN, ori_seed)
     else:
         if ori is None:
             raise ValueError("Grain orientations are not provided!")

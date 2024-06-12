@@ -1,31 +1,13 @@
-# Check individually
-import os
+import subprocess
 
-signal = 1 # 0 first then 1
-id = 3
-frame = -20
+# Values to be passed to the scripts
+wp_name = "wp038"
+frame = 19
 
-wp_name = "wp0" + str(id)
-root_path = r"d:\lzl\LocallyFinerMeshes"
-wp_path = os.path.join(root_path, wp_name)
-job_name = "Job-2.odb"
-save_path = [root_path + str(i) for i in [r"\images-ebsd", r"\images-crack", r"\images-both"]]
+# Execute step 1
+# Extract selected frames' PHILSM information from Odb file
+subprocess.run(["python", "simulation_utils\postprocessor5-step1.py", wp_name, str(frame)])
 
-if not signal:
-    # Extract philsm information from odb file
-    from extractFromODB import *
-    
-    extractFromODB(wp_path,job_name,frame)
-
-else:
-    # Draw EBSD and crack figures
-    from utils import *
-        
-    path = os.path.join(root_path, wp_name)
-    save_signal = drawCrack(path, save_path=save_path[1], save_name=wp_name)
-
-    if save_signal:
-        # drawEBSD(path, save_path=save_path[0], save_name=wp_name)
-
-        input = [os.path.join(path, wp_name + ".png") for path in save_path]
-        overlayImages(*input)
+# Execute step 2
+# Draw EBSD and crack images
+subprocess.run(["python", "simulation_utils\postprocessor5-step2.py", wp_name, str(frame)])

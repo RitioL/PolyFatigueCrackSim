@@ -1,15 +1,9 @@
-# Extract PHILSM information from Odb file
-from extractFromODB import *
-import os
-import json
+import subprocess
 
-frame = -1
+# Execute step 1
+# Extract the last frame's PHILSM information from Odb file
+subprocess.run(["python", "simulation_utils\postprocessor1-step1.py"])
 
-with open('config.json', 'r') as f:
-    config = json.load(f)
-root_path = str(config.get('root_path'))
-
-for wp_name in ["wp{:03d}".format(i) for i in range(1,3,1)]:
-    wp_path = os.path.join(root_path, wp_name)
-    job_name = "Job-2.odb"
-    extractFromODB(wp_path,job_name,frame)
+# Execute step 2
+# Analyze whether the crack length meets the standard and delete folders that do not meet the standard
+subprocess.run(["python", "simulation_utils\postprocessor1-step2.py"])

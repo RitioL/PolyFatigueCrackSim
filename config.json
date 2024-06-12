@@ -1,4 +1,5 @@
 {
-    "root_path": "workplace"
-    "smooth_grain_boundary": true
+    "root_path": "D:/CrackImage/PolyFEM/neper/17-final/07",
+    "smooth_grain_boundary": false,
+    "ori_seed": 7
 }

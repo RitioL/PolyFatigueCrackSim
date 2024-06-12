@@ -1,26 +1,9 @@
-# 绘制EBSD和Crack图
-import os
-import json
-from utils import *
+import subprocess
 
-with open('config.json', 'r') as f:
-    config = json.load(f)
-root_path = str(config.get('root_path'))
-save_path = [root_path + str(i) for i in [r"\images-ebsd", r"\images-crack", r"\images-both"]]
-    
-# 检查保存路径是否存在
-for path in save_path:
-    if not os.path.exists(path):
-        os.makedirs(path)
-    
-# setFigureSize(6, 4)
+# Execute step 1
+# Extract selected frames' PHILSM information from Odb file
+subprocess.run(["python", "simulation_utils\postprocessor2-step1.py"])
 
-for wp_name in ["wp{:03d}".format(i) for i in range(1,3,1)]:
-    path = os.path.join(root_path, wp_name)
-    save_singal = drawCrack(path, save_path=save_path[1], save_name=wp_name)
-    # 如果裂纹长度达到阈值则save_singal为真
-    if save_singal:
-        drawEBSD(path, save_path=save_path[0], save_name=wp_name)
-        # 叠加EBSD和Crack
-        input = [os.path.join(path, wp_name + ".png") for path in save_path]
-        overlayImages(*input)
+# Execute step 2
+# Draw EBSD and crack images
+subprocess.run(["python", "simulation_utils\postprocessor2-step2.py"])

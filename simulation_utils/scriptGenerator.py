@@ -30,7 +30,7 @@ else:
             "Mesh.SaveGroupsOfElements = 0;\n"
         )
 
-for id in range(1, 2, 1):
+for id in range(1, 101, 1):
     # make directories for abaqus workplace
     wp_name = "wp"+f"{id:03d}"
     os.makedirs(wp_name, exist_ok=True)
@@ -64,14 +64,14 @@ for id in range(1, 2, 1):
             )
 
     # 3. Make abaqus scripts
-    script3_content.append(
-        f"cd {wp_name}\n"
-        "if exist \"Job-2.lck\" del \"Job-2.lck\"\n"
-        "cmd/c abq2022 cpus=8 job=Job-2 user=..\\subroutines3_revised.for input=Job-1_modified.inp int ask=OFF\n"
-        "if exist \"Job-2.dat\" del \"Job-2.dat\"\n"
-        "if exist \"Job-2.stt\" del \"Job-2.stt\"\n"
-        "cd ..\n"
-        )
+    # script3_content.append(
+    #     f"cd {wp_name}\n"
+    #     "if exist \"Job-2.lck\" del \"Job-2.lck\"\n"
+    #     "cmd/c abq2022 cpus=8 job=Job-2 user=..\\subroutines3_revised.for input=Job-1_modified.inp int ask=OFF\n"
+    #     "if exist \"Job-2.dat\" del \"Job-2.dat\"\n"
+    #     "if exist \"Job-2.stt\" del \"Job-2.stt\"\n"
+    #     "cd ..\n"
+    #     )
     
     
 script3_content.append("pause\n")
@@ -79,7 +79,7 @@ script3_content.append("pause\n")
 with open('neper.sh', 'w', newline='\n') as newFile:
     newFile.writelines(script2_content)
 
-with open('startup.bat', 'w', newline='\r\n') as newFile:
-    newFile.writelines(script3_content)
+# with open('startup.bat', 'w', newline='\r\n') as newFile:
+#     newFile.writelines(script3_content)
 
 

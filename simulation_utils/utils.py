@@ -23,7 +23,135 @@ def timeit(func):
 def setFigureSize(width, height):
     plt.rcParams['figure.figsize'] = (width, height)
 
-@timeit
+def calculateCrackLength(philsm_path):
+    '''根据philsm结果计算每一帧的裂纹长度'''
+    # 读取CSV文件
+    df = pd.read_csv(philsm_path)
+
+    # 筛选有效数据
+    df = df[(df['PHILSM'] > -1e+20) & (df['PHILSM'] < 1e+20)]
+
+    # 按照帧号分组
+    grouped = df.groupby('Frame')
+
+    # 生成新的x坐标
+    x_new = np.linspace(0, 1.5, 750)
+    y_new = np.linspace(0, 1.0, 500)
+    x_new, y_new = np.meshgrid(x_new, y_new)
+
+    # 记录每一帧的裂纹长度
+    crack_lengths = {}
+
+    # 计算各帧裂纹沿x方向的长度
+    for frame, group in grouped:
+        x = group['X']
+        y = group['Y']
+        PHILSM = group['PHILSM']
+
+        # 计算插值结果
+        philsm_new = interpolate.griddata((x, y), PHILSM, (x_new, y_new), method='linear')
+
+        # 查找裂纹路径中PHILSM=0的最大x坐标
+        max_x_coordinate = None
+        contours = plt.contour(x_new, y_new, philsm_new, levels=[0], colors='black')
+        for path in contours.collections[0].get_paths():
+            max_x = np.max(path.vertices[:, 0])
+            if max_x_coordinate is None or max_x > max_x_coordinate:
+                max_x_coordinate = max_x
+
+        # 记录裂纹长度
+        crack_lengths[frame] = max_x_coordinate
+
+    return crack_lengths
+
+def isInvalidCrack(path, threshold=0.4):
+    '''返回当前裂纹是否达标的信号'''
+    if not os.path.exists(path):
+        return f"Warning: {path} is not existed!"
+    philsm_path = os.path.join(path, 'philsm.csv')
+    crack_lengths = calculateCrackLength(philsm_path)
+    for frame, length in crack_lengths.items():
+        crack_length = length
+    if crack_length >= threshold:
+        print(f"Valid: Crack length ({round(crack_length, 4)} mm) of frame {frame} >= {threshold} mm.")
+        return True
+    else:
+        print(f"Invalid: Crack length ({round(crack_length, 4)} mm) of frame {frame} < {threshold} mm.")
+        return False
+
+def analyzeCrack(path):
+    '''返回裂纹沿x方向的长度不再增长的帧和对应的裂纹长度,以及最后一帧及其裂纹长度'''
+    if not os.path.exists(path):
+        return f"Warning: {path} is not existed!"
+    philsm_path = os.path.join(path, 'philsm_selected_frames.csv')
+    crack_lengths = calculateCrackLength(philsm_path)
+
+    # 裂纹扩展结果中的最后一帧
+    last_frame = max(crack_lengths.keys())
+    last_length = round(crack_lengths[last_frame], 4)
+
+    # 裂纹沿x方向的长度不再增长的帧
+    stop_frame = None
+    stop_length = None
+    singal = True
+
+    for frame, length in sorted(crack_lengths.items(), reverse=True):
+        if (stop_length is not None) and (length-stop_length < -0.02):
+            stop_length = round(stop_length, 4)
+            print(f"Crack length along x-direction stops increasing at frame {stop_frame}/{last_frame},")
+            print(f"    and reaches {stop_length} mm (total {last_length} mm) when it stops.")
+            singal = False
+            break 
+        else:
+            stop_frame = frame
+            stop_length = length
+
+    if singal:
+        print(f"Crack length along x-direction stops increasing at frame {stop_frame}/{last_frame},")
+        print(f"    and reaches {stop_length} mm (total {last_length} mm) when it stops.")
+
+    # 返回裂纹沿x方向的长度不再增长的帧和对应的裂纹长度,以及最后一帧及其裂纹长度
+    return stop_frame, stop_length, last_frame, last_length
+
+# @timeit
+def drawCrack(path, csv_name, frame_idx, save_path=None, save_name=None, show=False):
+    
+    philsm_path = os.path.join(path, csv_name)
+    df = pd.read_csv(philsm_path)
+    df = df[df['Frame'] == frame_idx]
+    df = df[(df['PHILSM'] > -1e+20) & (df['PHILSM'] < 1e+20)]
+
+    x = df['X']
+    y = df['Y']
+    PHILSM = df['PHILSM']
+
+    # 生成新的x坐标
+    x_new = np.linspace(0, 1.5, 750)
+    y_new = np.linspace(0, 1.0, 500)
+    x_new, y_new = np.meshgrid(x_new,y_new)
+
+    # 计算插值结果
+    philsm_new = interpolate.griddata((x,y), PHILSM, (x_new,y_new), method='linear')
+
+    # 绘制等值线图
+    plt.close()
+    plt.contour(x_new, y_new, philsm_new, levels=[0], colors='black')
+    plt.gca().set_aspect('equal', adjustable='box')  # 保持纵横比例一致
+    plt.xlim([0,1.5])
+    plt.ylim([0,1.0])
+    plt.axis('off')
+
+    # 显示图像
+    if show:
+        plt.show()
+    
+    if save_path is not None and save_name is not None:
+        # 去掉坐标轴以及白边等
+        plt.axis('off')
+        plt.savefig(os.path.join(save_path, f'{save_name}.png'), bbox_inches='tight', pad_inches=0)
+        plt.close()
+    
+# @timeit
 def drawEBSD(path, save_path=None, save_name=None, show=False):
     node_info_path = os.path.join(path, "node_info.csv")
     ele_info_path = os.path.join(path, "element_info.csv")    
@@ -86,62 +214,13 @@ def drawEBSD(path, save_path=None, save_name=None, show=False):
     if show:
         plt.show()
     
-    if save_path is not None:
+    if save_path is not None and save_name is not None:
         # 去掉坐标轴以及白边等
         plt.axis('off')
         plt.savefig(os.path.join(save_path, f'{save_name}.png'), bbox_inches='tight', pad_inches=0)
         plt.close()
-
-@timeit
-def drawCrack(path, save_path=None, save_name=None, show=False, threshold=0.0):
     
-    philsm_path = os.path.join(path, 'philsm.csv')
-
-    df = pd.read_csv(philsm_path)
-    df = df[(df['PHILSM'] > -1e+20) & (df['PHILSM'] < 1e+20)]
-
-    x = df['X']
-    y = df['Y']
-    PHILSM = df['PHILSM']
-
-    # 生成新的x坐标
-    x_new = np.linspace(0, 1.5, 750)
-    y_new = np.linspace(0, 1.0, 500)
-    x_new, y_new = np.meshgrid(x_new,y_new)
-
-    # 计算插值结果
-    philsm_new = interpolate.griddata((x,y), PHILSM, (x_new,y_new), method='linear')
-
-    # 绘制等值线图
-    plt.close()
-    contours = plt.contour(x_new, y_new, philsm_new, levels=[0], colors='black')
-
-    # 检查等值线是否穿过设置的阈值
-    signal = False
-    for path in contours.collections[0].get_paths():
-        if np.any(path.vertices[:, 0] > threshold):
-            # 若穿过则保存信号为真
-            signal = True
-            break
-
-    plt.gca().set_aspect('equal', adjustable='box')  # 保持纵横比例一致
-    plt.xlim([0,1.5])
-    plt.ylim([0,1.0])
-    plt.axis('off')
-
-    # 显示图像
-    if show:
-        plt.show()
-    
-    if save_path is not None and signal:
-        # 去掉坐标轴以及白边等
-        plt.axis('off')
-        plt.savefig(os.path.join(save_path, f'{save_name}.png'), bbox_inches='tight', pad_inches=0)
-        plt.close()
-        # 返回保存信号
-        return signal
-
-@timeit
+# @timeit
 def overlayImages(ebsd_image_path, crack_image_path, save_path):
     # 读取黑白图像
     crack_image = cv2.imread(crack_image_path, cv2.IMREAD_GRAYSCALE)
