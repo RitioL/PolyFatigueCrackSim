@@ -33,7 +33,7 @@ This repository contains scripts for the batch generation of 2D polycrystalline 
     - **Note:** This script is used to filter out cracks that do not meet the length standard. This script extracts the `philsm` information from the last frame of the Odb file, analyzes whether the crack length meets the specified standard, and deletes any folders that do not meet the standard.
     ![The workflow of postprocessor1](images/postprocessor1.png)
 8. **Run `postprocessor2.py`**
-    - **Note:** This script is used to identify key frames before the crack turns back and to generate plots. This script extracts the `philsm` information from selected frames of the Odb file and generates EBSD and crack images.
+    - **Note:** The crack image in the final frame may have a path that turns back, which does not meet our requirements. Therefore, this script is designed to identify key frames before the crack turns back and to generate plots. This script extracts the `philsm` information from selected frames of the Odb file and generates EBSD and crack images.
     ![The workflow of postprocessor2](images/postprocessor2.png)
 9. **Run `postprocessor3.py`**
     - **Note:** This script is used to manually identify key frames before the crack turns back. While the first two scripts generally produce cracks that meet the length standard and do not contain curved sections, there are still a few cases that require manual intervention.
