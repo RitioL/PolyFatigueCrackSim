@@ -1,13 +1,14 @@
 # PolycrystalFatigueCrackSim
 - [Click here for the English Version.](#introduction)
 ## 0. 介绍
-该仓库包含用于批量生成二维多晶RVE模型和有限元分析操作的脚本。这些脚本用于模拟多晶材料中的疲劳裂纹扩展。所涉及的软件包括 Neper 4.9.0、Gmsh 4.13.1 和 Abaqus 2022。Neper 和 Gmsh 在通过 WSL 安装的 Ubuntu 上运行，相关安装说明可在参考文献部分找到。
+该仓库包含用于批量生成二维多晶RVE模型和有限元分析操作的脚本。这些脚本用于模拟多晶材料中的疲劳裂纹扩展。所涉及的软件包括 Neper 4.9.0、Gmsh 4.13.1 和 Abaqus 2022。Neper 和 Gmsh 在通过 WSL 安装的 Ubuntu 上运行，相关安装说明可在参考文献部分找到。本脚本还不够完善，许多参数的设定和机理的选择仍有待推敲，唯希望给你一点启发或参考。
 
 ## 1. `simulation_utils`：
 
 ### 预处理：
 0. **设置 `config.json`**
-    - 设置工作路径，并决定晶界类型（平滑或不平滑）。
+    - 设置工作路径，并决定晶界类型（平滑或不平滑）。其中平滑晶界模型的网格划分用到了 Gmsh 和相应的脚本，大概原理是先划分三角网格，然后将三角重新组合为四边形；非平滑模型的网格类似于EBSD的栅格化数据形式。不过此处并没有提供将EBSD转化为多晶模型的脚本，但是可以试着先将其转化为 .tser 文件类型（推荐逛逛 Neper 的 GitHub 讨论区，那里有挺多宝贵的建模经验）。
+    - ![平滑与不平滑晶界](images/gb.png)
 1. **运行 `scriptGenerator.py`**
     - 该脚本可创建多晶模型批量生成脚本 `neper.sh`，但是目前不生成 Abaqus 运算的启动脚本 `startup.bat`，该脚本位于 `workplace` 文件夹中。
 2. **在 Ubuntu 命令行中切换到 `neper.sh` 所在目录，然后输入以下命令：**
@@ -68,13 +69,14 @@
 ---
 
 ## Introduction
-This repository contains scripts for the batch generation of 2D polycrystalline RVE models and finite element analysis operations. These scripts are used to simulate the growth of fatigue cracks in polycrystalline materials. The involved software includes Neper 4.9.0, Gmsh 4.13.1, and Abaqus 2022. Neper and Gmsh are run on Ubuntu installed via WSL, and the related installation instructions can be found in the References section.
+This repository contains scripts for the batch generation of 2D polycrystalline RVE models and finite element analysis operations. These scripts are used to simulate the growth of fatigue cracks in polycrystalline materials. The involved software includes Neper 4.9.0, Gmsh 4.13.1, and Abaqus 2022. Neper and Gmsh are run on Ubuntu installed via WSL, and the related installation instructions can be found in the References section. This script is still not fully developed, and the setting of many parameters as well as the selection of mechanisms require further refinement. I only hope this provides you with some inspiration or reference.
 
 ## 1.simulation_utils:
 
 ### Preprocessing:
 0. **Set `config.json`**
-    - Set your workplace path and decide the type of grain boundary (smooth or non-smooth).
+    - Set your workplace path and decide the type of grain boundary (smooth or non-smooth). For smooth grain boundary models, the meshing uses Gmsh and the corresponding scripts, where the basic principle is to first generate triangular meshes and then recombine them into quadrilaterals. For non-smooth models, the mesh resembles the gridded data format of EBSD. However, the script for converting EBSD data into polycrystalline models is not provided here. You can try converting it to the .tser file format first (it's recommended to check out Neper's GitHub discussion forum, where you'll find plenty of valuable modeling experiences).
+    - ![Smooth vs. Non-smooth Grain Boundaries](images/gb.png)
 1. **Run `scriptGenerator.py`**
     - This script generates the batch polycrystal model generation script `neper.sh`. However, it does not currently generate the Abaqus operation startup script, `startup.bat`, which is now located in the `workplace` folder.
 2. **Change the directory to where `neper.sh` is located in the Ubuntu command line, then enter the following command:**
