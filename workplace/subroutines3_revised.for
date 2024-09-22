@@ -22,26 +22,29 @@ C     Find out the biggest value
             KMAX = I
          END IF
       END DO
-
+      
+C     Decide which slip normal to use
+      KNORM = 1 + KMAX / 4
+      
 C     Calculate the f
       FINDEX(1) = SIG1/PROPS(1)
       
 C     Calculate the normal      
-      DO I = 1, 3
-         FNORMAL(I, 1) = STATEV(3*12+3*(KMAX-1)+I)
+      DO I = 1, NDI
+         FNORMAL(I, 1) = STATEV(3*12+9*(KNORM-1)+I)
       END DO     
 
 C     Early-stopping      
-      IF (FINDEX(1).GT.20.0 .AND. FINDEX(1).GT.prev) THEN
-          num = num + 1
-      ELSE
-          num = 0
-      END IF
-      IF (num.GT.2) THEN
-          PRINT *, 'The program has been early stopped!'
-          STOP
-      END IF
-      prev = FINDEX(1)
+C      IF (FINDEX(1).GT.20.0 .AND. FINDEX(1).GT.prev) THEN
+C          num = num + 1
+C      ELSE
+C          num = 0
+C      END IF
+C      IF (num.GT.2) THEN
+C          PRINT *, 'The program has been early stopped!'
+C          STOP
+C      END IF
+C      prev = FINDEX(1)
 C      print *, num, prev
 C      print *, ' '
       
