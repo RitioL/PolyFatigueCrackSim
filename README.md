@@ -1,14 +1,82 @@
 # PolycrystalFatigueCrackSim
+- [Click here for the English Version.](#introduction)
+## 0. 介绍
+该仓库包含用于批量生成二维多晶RVE模型和有限元分析操作的脚本。这些脚本用于模拟多晶材料中的疲劳裂纹扩展。所涉及的软件包括 Neper 4.9.0、Gmsh 4.13.1 和 Abaqus 2022。Neper 和 Gmsh 在通过 WSL 安装的 Ubuntu 上运行，相关安装说明可在参考文献部分找到。
 
+## 1. `simulation_utils`：
+
+### 预处理：
+0. **设置 `config.json`**
+    - 设置工作路径，并决定晶界类型（平滑或不平滑）。
+1. **运行 `scriptGenerator.py`**
+    - 该脚本可创建多晶模型批量生成脚本 `neper.sh`，但是目前不生成 Abaqus 运算的启动脚本 `startup.bat`，该脚本位于 `workplace` 文件夹中。
+2. **在 Ubuntu 命令行中切换到 `neper.sh` 所在目录，然后输入以下命令：**
+    ```bash
+    ./neper.sh
+    ```
+    - **注意**：不同系统的换行符不同，可能会导致脚本执行错误。`scriptGenerator.py` 已解决此问题。如有需要，可以在 Linux 终端命令行中转换：
+    ```bash
+    sed -i 's/\r$//' neper.sh
+    ```
+3. **运行 `editInp1.py`**
+    - 此脚本向 `inp` 文件中添加材料信息。
+4. **运行 `preprocessor.py`**
+    - 此脚本设置各种模拟参数，如分析步和边界条件。
+5. **运行 `editInp2.py`**
+    - 此脚本批量修改某些参数，具体可打开脚本查看。
+
+### 执行运算：
+6. **运行 `startup.bat`**
+    - 该批处理脚本位于 `workplace`，用于向 Abaqus 提交任务。当前启动批处理可以监控命令窗口（见 `workplace` 中的 `monitor.ps1`），并解决因奇异矩阵（singular matrix）问题导致的计算停滞。
+
+### 后处理：
+7. **运行 `postprocessor1.py`**
+    - 此脚本用于筛选不符合长度标准的裂纹。该脚本从 Odb 文件的最后一帧提取 `philsm` 信息，分析裂纹长度是否符合指定标准，并删除不符合标准的文件夹。
+    ![后处理流程图](images/postprocessor1.png)
+8. **运行 `postprocessor2.py`**
+    - 最终帧的裂纹图像可能会出现往回拐的路径，这往往不符合我们的要求。因此，此脚本设计用于识别裂纹回拐之前的关键帧并生成图像。该脚本从 Odb 文件的选定帧中提取 `philsm` 信息，并生成 EBSD 和裂纹图像。
+    ![后处理流程图](images/postprocessor2.png)
+9. **运行 `postprocessor3.py`**
+    - 此脚本用于手动识别裂纹回拐之前的关键帧。前两个脚本通常能产生符合长度标准且不含弯曲部分的裂纹，但仍有少数情况需要手动干预。
+
+## 2. UMAT 和 UDMGINI 说明：
+- `subroutines3_revised.for` 位于 `workplace`，除了原始版本 `huang_umat_97.for` 中含有的隐式 `UMAT` 外，还添加了控制损失起始的 `UDMGINI` 和早停机制，并根据 https://www.zhihu.com/question/45491271/answer/1192511740 将 `UMAT` 的某些项乘以2进行修正。
+- 此处 `UDMGINI` 的机理是比较（FCC/BCC）晶体的十二个滑移系（四个滑移面 × 三个滑移方向）上的累计塑性应变值，找出最大的其滑移系所对应的滑移面（四个中的一个）传递给 Abaqus 控制的主程序。
+
+## 3. Neper 案例：
+- 这里展示了一些 Neper 案例，可能有助于构建多晶模型。
+    ```bash
+    neper -T -n from_morpho -dim 2 -morpho "diameq:lognormal(0.07923,0.02839),1-sphericity:lognormal(0.14,0.07)" -domain "square(1.5,1.5)" -transform "cut(cube(-0.2,0.2,0.65,0.85,-1,1,0.1))" -reg 1 -id 2 -o notched_poly
+    ```  
+    ![通过圆角矩形裁剪的缺口多晶模型](images/case1.png)
+    ```bash
+    neper -M notched_poly.tess -nset edges -cledge "(y>0.25&&y<0.75&&x>-0.01&&x<1.0)?0.05:0.08" -order 1 -format msh -o notched_poly_msh
+    ```
+    ![局部网格细化的缺口多晶模型](images/case2.png)
+
+## 4. 参考文献：
+- Abaqus:
+    - https://www.bilibili.com/video/BV1z34y1B7mc/?share_source=copy_web&vd_source=f0f26d78a8c687fafec0191a99a75a1a
+- Neper&Gmsh:
+    - https://www.bilibili.com/video/BV1cq4y1G7vt/?share_source=copy_web&vd_source=f0f26d78a8c687fafec0191a99a75a1a
+    - https://neper.info/index.html
+    - https://github.com/neperfepx/neper/discussions
+- 文章：
+    - Guo, H. H., Lu, R. S., Liu, F., Cui, W., Shen, J., Yang, J., & Zhang, X. C. (2023). Microscopic fatigue crack propagation model for polycrystalline alloys. International Journal of Fatigue, 170, 107526.
+    - Guo, G., Jiang, W., Liu, X., Chen, J., Li, L., Wang, J., ... & Zhang, Z. (2023). In-situ SEM-EBSD investigation of the low-cycle fatigue deformation behavior of Inconel 718 at grain-scale. Journal of Materials Research and Technology, 24, 5007-5023.
+
+---
+
+## Introduction
 This repository contains scripts for the batch generation of 2D polycrystalline RVE models and finite element analysis operations. These scripts are used to simulate the growth of fatigue cracks in polycrystalline materials. The involved software includes Neper 4.9.0, Gmsh 4.13.1, and Abaqus 2022. Neper and Gmsh are run on Ubuntu installed via WSL, and the related installation instructions can be found in the References section.
 
 ## 1.simulation_utils:
 
 ### Preprocessing:
 0. **Set `config.json`**
-    - **Note:** Set your workplace path and decide the type of grain boundary (smooth or non-smooth).
+    - Set your workplace path and decide the type of grain boundary (smooth or non-smooth).
 1. **Run `scriptGenerator.py`**
-    - **Note:** This script generates the batch polycrystal model generation script `neper.sh`. However, it does not currently generate the Abaqus operation startup script, `startup.bat`, which is now located in the `workplace` folder.
+    - This script generates the batch polycrystal model generation script `neper.sh`. However, it does not currently generate the Abaqus operation startup script, `startup.bat`, which is now located in the `workplace` folder.
 2. **Change the directory to where `neper.sh` is located in the Ubuntu command line, then enter the following command:**
     ```bash
     ./neper.sh
@@ -18,28 +86,29 @@ This repository contains scripts for the batch generation of 2D polycrystalline 
     sed -i 's/\r$//' neper.sh
     ```
 3. **Run `editInp1.py`**
-    - **Note:** This script adds material information to the `inp` file.
+    - This script adds material information to the `inp` file.
 4. **Run `preprocessor.py`**
-    - **Note:** This script sets various simulation parameters such as analysis steps and boundary conditions.
+    - This script sets various simulation parameters such as analysis steps and boundary conditions.
 5. **Run `editInp2.py`**
-    - **Note:** This script batch modifies certain parameters.
+    - This script batch modifies certain parameters.
 
 ### Execution:
 6. **Run `startup.bat`**
-    - **Note:** This script batch is located in the `workplace` and is used to submit the jobs to Abaqus. The current startup batch is capable of monitoring the command window (see `monitor.ps1` in `workplace`) and resolving stalls caused by Singular Matrix issues.
+    - This script batch is located in the `workplace` and is used to submit the jobs to Abaqus. The current startup batch is capable of monitoring the command window (see `monitor.ps1` in `workplace`) and resolving stalls caused by Singular Matrix issues.
 
 ### Post-processing:
 7. **Run `postprocessor1.py`**
-    - **Note:** This script is used to filter out cracks that do not meet the length standard. This script extracts the `philsm` information from the last frame of the Odb file, analyzes whether the crack length meets the specified standard, and deletes any folders that do not meet the standard.
+    - This script is used to filter out cracks that do not meet the length standard. This script extracts the `philsm` information from the last frame of the Odb file, analyzes whether the crack length meets the specified standard, and deletes any folders that do not meet the standard.
     ![The workflow of postprocessor1](images/postprocessor1.png)
 8. **Run `postprocessor2.py`**
-    - **Note:** The crack image in the final frame may have a path that turns back, which does not meet our requirements. Therefore, this script is designed to identify key frames before the crack turns back and to generate plots. This script extracts the `philsm` information from selected frames of the Odb file and generates EBSD and crack images.
+    - The crack image in the final frame may have a path that turns back, which does not meet our requirements. Therefore, this script is designed to identify key frames before the crack turns back and to generate plots. This script extracts the `philsm` information from selected frames of the Odb file and generates EBSD and crack images.
     ![The workflow of postprocessor2](images/postprocessor2.png)
 9. **Run `postprocessor3.py`**
-    - **Note:** This script is used to manually identify key frames before the crack turns back. While the first two scripts generally produce cracks that meet the length standard and do not contain curved sections, there are still a few cases that require manual intervention.
+    - This script is used to manually identify key frames before the crack turns back. While the first two scripts generally produce cracks that meet the length standard and do not contain curved sections, there are still a few cases that require manual intervention.
 
-## 2.UMAT Instructions:
-- `subroutines3_revised.for` is located in the `workplace`, which adds an early-stopping mechanism to the original version `huang_umat_97.for` and is revised by multiplying certain terms by 2 according to https://www.zhihu.com/question/45491271/answer/1192511740
+## 2.UMAT and UDMGINI Instructions:
+- `subroutines3_revised.for` is located in the `workplace`. In addition to the implicit `UMAT` from the original version `huang_umat_97.for`, it incorporates an an early-stopping mechanism includes the subroutine `UDMGINI`, which controls the initiation of damage. Certain terms in `UMAT` have been revised by multiplying by 2 according to https://www.zhihu.com/question/45491271/answer/1192511740.
+- The mechanism of `UDMGINI` involves comparing the accumulated plastic strain values across the twelve slip systems (4 slip planes × 3 slip directions) of the (FCC/BCC) crystal. The slip plane corresponding to the slip system with the largest accumulated strain is identified and passed to the main program controlled by Abaqus.
 
 ## 3.Neper Cases:
 - Some neper cases are shown here, which might help you to build polycrystalline models.
