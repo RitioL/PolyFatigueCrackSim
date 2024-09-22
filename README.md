@@ -7,7 +7,7 @@
 
 ### 预处理：
 0. **设置 `config.json`**
-    - 设置工作路径。把 `monitor.ps1`, `startup.bat` 和 `subroutines3_revised.for` 添加到你的工作路径，之后我会介绍这些文件的作用。
+    - 设置工作区的路径，或者使用我的默认工作区。把 `monitor.ps1`, `startup.bat` 和 `subroutines3_revised.for` 添加到你的工作区，之后我会介绍这些文件的作用。
     - 决定晶界类型（平滑或不平滑）。其中平滑晶界模型的网格划分用到了 Gmsh 和相应的脚本，大概原理是先划分三角网格，然后将三角重新组合为四边形；非平滑模型的网格类似于EBSD的栅格化数据形式。不过此处并没有提供将EBSD转化为多晶模型的脚本，但是可以试着先将其转化为 .tser 文件类型（推荐逛逛 Neper 的 GitHub 讨论区，那里有挺多宝贵的建模经验）。
     - ![平滑与不平滑晶界](images/gb.png)
 1. **运行 `scriptGenerator.py`**
@@ -76,7 +76,7 @@ This repository contains scripts for the batch generation of 2D polycrystalline 
 
 ### Preprocessing:
 0. **Set `config.json`**
-    - Set your workplace path. Add `monitor.ps1`, `startup.bat`, and `subroutines3_revised.for` to your workplace, and I will explain the functions of these files shortly.
+    - Set your workplace path, or use the default workplace path. Add `monitor.ps1`, `startup.bat`, and `subroutines3_revised.for` to your workplace, and I will explain the functions of these files shortly.
     - Decide the type of grain boundary (smooth or non-smooth). For smooth grain boundary models, the meshing uses Gmsh and the corresponding scripts, where the basic principle is to first generate triangular meshes and then recombine them into quadrilaterals. For non-smooth models, the mesh resembles the gridded data format of EBSD. However, the script for converting EBSD data into polycrystalline models is not provided here. You can try converting it to the .tser file format first (it's recommended to check out Neper's GitHub discussion forum, where you'll find plenty of valuable modeling experiences).
     - ![Smooth vs. Non-smooth Grain Boundaries](images/gb.png)
 1. **Run `scriptGenerator.py`**
