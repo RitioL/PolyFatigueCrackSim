@@ -11,7 +11,7 @@
     - 决定晶界类型（平滑或不平滑）。其中平滑晶界模型的网格划分用到了 Gmsh 和相应的脚本，大概原理是先划分三角网格，然后将三角重新组合为四边形；非平滑模型的网格类似于EBSD的栅格化数据形式。不过此处并没有提供将EBSD转化为多晶模型的脚本，但是可以试着先将其转化为 .tser 文件类型（推荐逛逛 Neper 的 GitHub 讨论区，那里有挺多宝贵的建模经验）。
     - ![平滑与不平滑晶界](images/gb.png)
 1. **运行 `scriptGenerator.py`**
-    - 该脚本可创建多晶模型批量生成脚本 `neper.sh`，这个批处理脚本通过改变 `Neper` 的 `-T` 命令中的 `-id` 参数生成了晶粒分布不同的模型，并划分好网格。另外，在工作目录中还会生成多个名称为 `wpXXX` 的子工作目录。但是该脚本目前不生成 Abaqus 运算的启动脚本 `startup.bat`，该脚本位于 `workplace` 文件夹中。
+    - 该脚本可创建多晶模型批量生成脚本 `neper.sh`，这个批处理脚本通过改变 `Neper` 的 `-T` 命令中的 `-id` 参数生成了晶粒分布不同的模型，并划分好网格。另外，在工作目录中还会生成多个名称为 `wpXXX` 的子工作目录。但是 `scriptGenerator.py` 目前不生成 Abaqus 运算的启动脚本 `startup.bat`，该脚本位于 `workplace` 文件夹中。
 2. **在 Ubuntu 终端命令行中切换到 `neper.sh` 所在目录，然后输入以下命令：**
     ```bash
     ./neper.sh
@@ -80,7 +80,7 @@ This repository contains scripts for the batch generation of 2D polycrystalline 
     - Decide the type of grain boundary (smooth or non-smooth). For smooth grain boundary models, the meshing uses Gmsh and the corresponding scripts, where the basic principle is to first generate triangular meshes and then recombine them into quadrilaterals. For non-smooth models, the mesh resembles the gridded data format of EBSD. However, the script for converting EBSD data into polycrystalline models is not provided here. You can try converting it to the .tser file format first (it's recommended to check out Neper's GitHub discussion forum, where you'll find plenty of valuable modeling experiences).
     - ![Smooth vs. Non-smooth Grain Boundaries](images/gb.png)
 1. **Run `scriptGenerator.py`**
-    - This script generates the batch polycrystal model generation script `neper.sh`. This batch script generates models with different grain distributions by changing the `-id` parameter in the `-T` command of `Neper` and also performs the meshing. However, it does not currently generate the Abaqus operation startup script, `startup.bat`, which is now located in the `workplace` folder.
+    - This script generates the batch polycrystal model generation script `neper.sh`. This batch script generates models with different grain distributions by changing the `-id` parameter in the `-T` command of `Neper` and also performs the meshing. However, `scriptGenerator.py` does not currently generate the Abaqus operation startup script, `startup.bat`, which is now located in the `workplace` folder.
 2. **Change the directory to where `neper.sh` is located in the Ubuntu command line, then enter the following command:**
     ```bash
     ./neper.sh
@@ -90,7 +90,7 @@ This repository contains scripts for the batch generation of 2D polycrystalline 
     sed -i 's/\r$//' neper.sh
     ```
 3. **Run `editInp1.py`**
-    - This script adds material information to the `inp` file.
+    - This script adds material information to the `inp` file. You can also set a second random seed, which is the random seed for the crystal orientation.
 4. **Run `preprocessor.py`**
     - This script sets various simulation parameters such as analysis steps and boundary conditions.
 5. **Run `editInp2.py`**
