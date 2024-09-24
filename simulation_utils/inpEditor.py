@@ -10,8 +10,9 @@ with open('config.json', 'r') as f:
     config = json.load(f)
 smooth_grain_boundary = config.get('smooth_grain_boundary')
 
-IN718 = np.array([
-   242180.,   138850.,   104200.,        0.,        0.,        0.,        0.,        0.,
+# from Microscopic fatigue crack propagation model for polycrystalline alloys
+GH4169 = np.array([
+   266538.,   114000.,    76000.,        0.,        0.,        0.,        0.,        0.,
         0.,        0.,        0.,        0.,        0.,        0.,        0.,        0.,
         0.,        0.,        0.,        0.,        0.,        0.,        0.,        0.,
         1.,        0.,        0.,        0.,        0.,        0.,        0.,        0.,
@@ -23,14 +24,14 @@ IN718 = np.array([
        10.,   0.00001,        0.,        0.,        0.,        0.,        0.,        0.,
         0.,        0.,        0.,        0.,        0.,        0.,        0.,        0.,
         0.,        0.,        0.,        0.,        0.,        0.,        0.,        0.,
-     5800.,      120.,      151.,        0.,        0.,        0.,        0.,        0.,
-       1.9,       1.9,        0.,        0.,        0.,        0.,        0.,        0.,
+      200.,      650.,      315.,        0.,        0.,        0.,        0.,        0.,
+        1.,        1.,        0.,        0.,        0.,        0.,        0.,        0.,
         0.,        0.,        0.,        0.,        0.,        0.,        0.,        0.,
         0.,        0.,        0.,        0.,        0.,        0.,        0.,        0.,
         0.,        0.,        0.,        0.,        0.,        0.,        0.,        0.,
         0.,        0.,        0.,        0.,        0.,        0.,        0.,        0.,
        0.5,        1.,        0.,        0.,        0.,        0.,        0.,        0.,
-        1.,       10.,     1e-05,        0.,        0.,        0.,        0.,        0.
+        1.,       20.,     1e-05,        0.26,      0.265,    0.8,        3.,        0.
         ]).reshape(-1,8)
 
 # 旋转矩阵-绕x轴旋转
@@ -87,7 +88,7 @@ def getGrainInfo(content, getGrainID=False):
     if getGrainID:
         grainID = []
         for line in lines:
-            if "*ELEMENT, type=CPS4, ELSET=Surface" in line:
+            if "*ELEMENT, type=CPS4, ELSET=Surface" in line or "*ELEMENT, type=CPE4, ELSET=Surface" in line:
                 grainID.append(int(line.split("face")[1]))
         grainN = len(grainID)
 
@@ -96,7 +97,7 @@ def getGrainInfo(content, getGrainID=False):
     
     else:
         for line in reversed(lines):
-            if "*ELEMENT, type=CPS4, ELSET=Surface" in line:
+            if "*ELEMENT, type=CPS4, ELSET=Surface" in line or "*ELEMENT, type=CPE4, ELSET=Surface" in line:
                 grainN = int(line.split("face")[1])
                 break
 
@@ -170,7 +171,7 @@ def adjustElement(content):
 
     for i in range(end_index, len(content_lines)):
         if content_lines[i].startswith("*ELEMENT, type=CPS4, ELSET="):
-            continue
+            content_lines[i] = content_lines[i].replace("CPS4", "CPE4")
         else:
             if content_lines[i].strip():
                 content_lines[i] = adjust_line(content_lines[i], order)
@@ -258,7 +259,7 @@ def addSectionMaterial(content, depvar, material, orientations):
     return content
 
 # 向inp添加solid section和材料信息
-def inpModifier(src, new, material=IN718, part_name="Tess", ori=None, random_ori=True, ori_seed=1, depvar=150):
+def inpModifier(src, new, material=GH4169, part_name="Tess", ori=None, random_ori=True, ori_seed=1, depvar=150):
     '''
     src: inp path
     new: save path
