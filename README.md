@@ -24,6 +24,8 @@
     - 此脚本向 `inp` 文件中添加材料信息。同时可以设置第二个随机数种子，即晶体取向随机数种子。
 4. **运行 `preprocessor.py`**
     - 此脚本设置各种模拟参数，如分析步和边界条件。
+    - **注意**：若运行时提示“输入行太长 命令语法不正确”，可将 `abq2022.bat` 中的调用编译器命令注释掉，运行完毕再启用。如下图使用 `rem` 注释掉了两条调用 VS 和 Fortran 的命令。
+    ![注释两条命令](images/commentout.png)
 5. **运行 `editInp2.py`**
     - 此脚本批量修改某些参数，具体可打开脚本查看。
 
@@ -79,14 +81,14 @@ This repository contains scripts for the batch generation of 2D polycrystalline 
 0. **Set `config.json`**
     - Set your workplace path, or use the default workplace path. Add `monitor.ps1`, `startup.bat`, and `subroutines3_revised.for` to your workplace, and I will explain the functions of these files shortly.
     - Decide the type of grain boundary (smooth or non-smooth). For smooth grain boundary models, the meshing uses Gmsh and the corresponding scripts, where the basic principle is to first generate triangular meshes and then recombine them into quadrilaterals. For non-smooth models, the mesh resembles the gridded data format of EBSD. However, the script for converting EBSD data into polycrystalline models is not provided here. You can try converting it to the .tser file format first (it's recommended to check out Neper's GitHub discussion forum, where you'll find plenty of valuable modeling experiences).
-    - ![Smooth vs. Non-smooth Grain Boundaries](images/gb.png)
+    ![Smooth vs. Non-smooth Grain Boundaries](images/gb.png)
 1. **Run `scriptGenerator.py`**
     - This script generates the batch polycrystal model generation script `neper.sh`. This batch script generates models with different grain distributions by changing the `-id` parameter in the `-T` command of `Neper` and also performs the meshing. However, `scriptGenerator.py` does not currently generate the Abaqus operation startup script, `startup.bat`, which is now located in the `workplace` folder.
 2. **Change the directory to where `neper.sh` is located in the Ubuntu command line, then enter the following command:**
     ```bash
     ./neper.sh
     ```
-    - **Note:** Different systems have different line break characters, which may cause script execution errors. `scriptGenerator.py` has resolved this issue. If needed, you can convert it in the Ubuntu command line with:
+    - *Note:* Different systems have different line break characters, which may cause script execution errors. `scriptGenerator.py` has resolved this issue. If needed, you can convert it in the Ubuntu command line with:
     ```bash
     sed -i 's/\r$//' neper.sh
     ```
@@ -94,6 +96,8 @@ This repository contains scripts for the batch generation of 2D polycrystalline 
     - This script adds material information to the `inp` file. You can also set a second random seed, which is the random seed for the crystal orientation.
 4. **Run `preprocessor.py`**
     - This script sets various simulation parameters such as analysis steps and boundary conditions.
+    - *Note:* If you receive the message "The input line is too long. The syntax of the command is incorrect" during execution, you can comment out the compiler calls in `abq2022.bat`, run it, and then enable them again. As shown in the image, use `rem` to comment out the two commands that call Visual Studio and Fortran.
+    ![Comment out two commands](images/commentout.png)
 5. **Run `editInp2.py`**
     - This script batch modifies certain parameters.
 
