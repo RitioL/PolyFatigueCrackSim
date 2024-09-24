@@ -18,6 +18,6 @@ for wp_name in ["wp{:03d}".format(i) for i in range(1,101,1)]:
     print(f"{wp_name}:")
     cl = getAverageElementLengthWithinGrain(path)
 
-    modifyDamage(src, new, cl=cl, properties=[1e-10])
+    modifyDamage(src, new, cl=cl, properties=[1e-11])
     modifyStep(new, new, step_time=500, min_increment=1e-30, max_increment=0.01)
-    modifyAmplitude(new, new, addAmplitude(0.1,1.0,5,100,print=False))
+    modifyAmplitude(new, new, addAmplitude(0.1,1.0,2,250,print=False))
