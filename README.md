@@ -1,7 +1,7 @@
 # PolycrystalFatigueCrackSim
 - [Click here for the English Version.](#introduction)
 ## 0. 介绍
-该仓库包含用于批量生成二维多晶RVE模型和有限元分析操作的脚本。这些脚本用于模拟多晶材料中的疲劳裂纹扩展。所涉及的软件包括 Neper 4.9.0、Gmsh 4.13.1 和 Abaqus 2022。Neper 和 Gmsh 在通过 WSL 安装的 Ubuntu 上运行，相关安装说明可在参考文献部分找到。另外，脚本需要在 Python 环境下运行本，所需 Python 包请查看 `requirements.txt` 。该脚本还不够完善，许多参数的设定和机理的选择仍有待推敲，唯希望给你一点启发或参考。
+该仓库包含用于批量生成二维多晶RVE模型和有限元分析操作的脚本。这些脚本用于模拟多晶材料中的疲劳裂纹扩展。所涉及的软件包括 Neper 4.9.0、Gmsh 4.13.1 和 Abaqus 2022。Neper 和 Gmsh 在通过 WSL 安装的 Ubuntu 上运行，相关安装说明可在参考文献部分找到。另外，脚本需要在 Python 环境下运行，所需 Python 包请查看 `requirements.txt` 。该脚本还不够完善，许多参数的设定和机理的选择仍有待推敲，唯希望给你一点启发或参考。
 
 ## 1. `simulation_utils`：
 
