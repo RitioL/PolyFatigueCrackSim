@@ -1,7 +1,7 @@
 # PolycrystalFatigueCrackSim
 - [Click here for the English Version.](#introduction)
 ## 0. 介绍
-该仓库包含用于批量生成二维多晶RVE模型和有限元分析操作的脚本。这些脚本用于模拟多晶材料中的疲劳裂纹扩展。所涉及的软件包括 Neper 4.9.0、Gmsh 4.13.1 和 Abaqus 2022。Neper 和 Gmsh 在通过 WSL 安装的 Ubuntu 上运行，相关安装说明可在参考文献部分找到。本脚本还不够完善，许多参数的设定和机理的选择仍有待推敲，唯希望给你一点启发或参考。
+该仓库包含用于批量生成二维多晶RVE模型和有限元分析操作的脚本。这些脚本用于模拟多晶材料中的疲劳裂纹扩展。所涉及的软件包括 Neper 4.9.0、Gmsh 4.13.1 和 Abaqus 2022。Neper 和 Gmsh 在通过 WSL 安装的 Ubuntu 上运行，相关安装说明可在参考文献部分找到。另外，脚本需要在 Python 环境下运行本，所需 Python 包请查看 `requirements.txt` 。该脚本还不够完善，许多参数的设定和机理的选择仍有待推敲，唯希望给你一点启发或参考。
 
 ## 1. `simulation_utils`：
 
@@ -12,6 +12,7 @@
     - ![平滑与不平滑晶界](images/gb.png)
 1. **运行 `scriptGenerator.py`**
     - 该脚本可创建多晶模型批量生成脚本 `neper.sh`，这个批处理脚本通过改变 `Neper` 的 `-T` 命令中的 `-id` 参数生成了晶粒分布不同的模型，并划分好网格。另外，在工作目录中还会生成多个名称为 `wpXXX` 的子工作目录。但是 `scriptGenerator.py` 目前不生成 Abaqus 运算的启动脚本 `startup.bat`，该脚本位于 `workplace` 文件夹中。
+    - *注意*：几何模型以及晶粒的形状、尺寸均可在此脚本中所涉及的 Neper 命令行中修改。方便起见，可自行将这些参数放入 `config.json` 文件中，并在 `scriptGenerator.py` 中读取这些参数。
 2. **在 Ubuntu 终端命令行中切换到 `neper.sh` 所在目录，然后输入以下命令：**
     ```bash
     ./neper.sh
@@ -73,7 +74,7 @@
 ---
 
 ## Introduction
-This repository contains scripts for the batch generation of 2D polycrystalline RVE models and finite element analysis operations. These scripts are used to simulate the growth of fatigue cracks in polycrystalline materials. The involved software includes Neper 4.9.0, Gmsh 4.13.1, and Abaqus 2022. Neper and Gmsh are run on Ubuntu installed via WSL, and the related installation instructions can be found in the References section. This script is still not fully developed, and the setting of many parameters as well as the selection of mechanisms require further refinement. I only hope this provides you with some inspiration or reference.
+This repository contains scripts for the batch generation of 2D polycrystalline RVE models and finite element analysis operations. These scripts are used to simulate the growth of fatigue cracks in polycrystalline materials. The involved software includes Neper 4.9.0, Gmsh 4.13.1, and Abaqus 2022. Neper and Gmsh are run on Ubuntu installed via WSL, and the related installation instructions can be found in the References section. Additionally, the script needs to be run in a Python environment. Please refer to the `requirements.txt` file for the Python packages that need to be installed. This script is still not fully developed, and the setting of many parameters as well as the selection of mechanisms require further refinement. I only hope this provides you with some inspiration or reference.
 
 ## 1.simulation_utils:
 
@@ -84,6 +85,7 @@ This repository contains scripts for the batch generation of 2D polycrystalline 
     ![Smooth vs. Non-smooth Grain Boundaries](images/gb.png)
 1. **Run `scriptGenerator.py`**
     - This script generates the batch polycrystal model generation script `neper.sh`. This batch script generates models with different grain distributions by changing the `-id` parameter in the `-T` command of `Neper` and also performs the meshing. However, `scriptGenerator.py` does not currently generate the Abaqus operation startup script, `startup.bat`, which is now located in the `workplace` folder.
+    - *Note*：The geometry model, as well as the shape and size of the grains, can be modified in the Neper command lines involved in this script. For convenience, you can add these parameters to the config.json file and have them read in the `scriptGenerator.py` script.
 2. **Change the directory to where `neper.sh` is located in the Ubuntu command line, then enter the following command:**
     ```bash
     ./neper.sh
