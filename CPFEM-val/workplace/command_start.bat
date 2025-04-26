@@ -1,0 +1,1 @@
+abq2022 cpus=16 job=Job-1 user=..\subroutines_revised.for input=Job-1-copy.inp int ask=OFF
